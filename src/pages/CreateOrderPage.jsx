@@ -1,5 +1,3 @@
-// src/pages/CreateOrderPage.jsx
-
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -11,9 +9,15 @@ const CreateOrderPage = () => {
   const [branches, setBranches] = useState([]);
   const [branchId, setBranchId] = useState('');
   const [error, setError] = useState('');
+  const role = localStorage.getItem('role');
 
   useEffect(() => {
-    // Şube listesi çek
+    if (role !== 'admin' && role !== 'worker' && role !== 'super_admin') {
+      navigate('/orders');
+    }
+  }, [navigate, role]);
+
+  useEffect(() => {
     const fetchBranches = async () => {
       try {
         const token = localStorage.getItem('token');
@@ -21,14 +25,20 @@ const CreateOrderPage = () => {
           headers: { Authorization: `Bearer ${token}` }
         });
         setBranches(res.data);
-        if (res.data.length > 0) setBranchId(res.data[0]._id);
+
+        if (role === 'worker') {
+          const userBranch = res.data.find(b => b._id === localStorage.getItem('branchId'));
+          setBranchId(userBranch?._id || res.data[0]?._id || '');
+        } else {
+          setBranchId(res.data[0]?._id || '');
+        }
       } catch (err) {
         setError('Şubeler alınamadı');
       }
     };
 
     fetchBranches();
-  }, []);
+  }, [role]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -69,15 +79,19 @@ const CreateOrderPage = () => {
           required
           style={{ width: '100%', marginBottom: 10 }}
         />
-        <select
-          value={branchId}
-          onChange={(e) => setBranchId(e.target.value)}
-          style={{ width: '100%', marginBottom: 10 }}
-        >
-          {branches.map((b) => (
-            <option key={b._id} value={b._id}>{b.name}</option>
-          ))}
-        </select>
+
+        {role !== 'worker' && (
+          <select
+            value={branchId}
+            onChange={(e) => setBranchId(e.target.value)}
+            style={{ width: '100%', marginBottom: 10 }}
+          >
+            {branches.map((b) => (
+              <option key={b._id} value={b._id}>{b.name}</option>
+            ))}
+          </select>
+        )}
+
         <button type="submit" style={{ width: '100%' }}>Oluştur</button>
       </form>
       {error && <p style={{ color: 'red' }}>{error}</p>}

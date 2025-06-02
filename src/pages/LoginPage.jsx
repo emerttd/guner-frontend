@@ -1,3 +1,5 @@
+// src/pages/LoginPage.jsx
+
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -6,6 +8,7 @@ const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -17,19 +20,16 @@ const LoginPage = () => {
         password,
       });
 
-
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('role', res.data.user.role);
       alert(`Hoş geldin ${res.data.user.name}`);
-      // örnek: window.location.href = "/dashboard";
+      navigate('/orders'); // ✅ Giriş sonrası yönlendirme
     } catch (err) {
       setError(err.response?.data?.message || 'Giriş hatası');
     }
   };
 
   return (
-    // src/pages/LoginPage.jsx
-
     <div style={{
       display: 'flex',
       flexDirection: 'column',
@@ -46,6 +46,7 @@ const LoginPage = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           style={{ padding: 8, fontSize: 16 }}
+          required
         />
         <input
           type="password"
@@ -53,12 +54,12 @@ const LoginPage = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           style={{ padding: 8, fontSize: 16 }}
+          required
         />
         <button type="submit" style={{ padding: 10, fontSize: 16 }}>Giriş Yap</button>
       </form>
       {error && <p style={{ color: 'red', marginTop: 8 }}>{error}</p>}
     </div>
-
   );
 };
 

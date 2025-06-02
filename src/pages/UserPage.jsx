@@ -1,5 +1,3 @@
-// src/pages/UserPage.jsx
-
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -12,13 +10,24 @@ const UserPage = () => {
     surname: '',
     email: '',
     password: '',
-    role: 'admin', // ✅ varsayılan olarak admin
+    role: 'admin',
     branchId: ''
   });
+  const [editingId, setEditingId] = useState(null);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const token = localStorage.getItem('token');
+  const currentRole = localStorage.getItem('role');
+
+  useEffect(() => {
+    if (currentRole !== 'super_admin') {
+      navigate('/orders');
+    } else {
+      fetchUsers();
+      fetchBranches();
+    }
+  }, []);
 
   const fetchUsers = async () => {
     try {
@@ -26,7 +35,7 @@ const UserPage = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUsers(res.data);
-    } catch (err) {
+    } catch {
       setError('Kullanıcılar alınamadı.');
     }
   };
@@ -45,25 +54,50 @@ const UserPage = () => {
     }
   };
 
-  const handleCreate = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     try {
-      await axios.post('http://localhost:5000/api/users', form, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const payload = { ...form };
+      if (form.role !== 'worker') {
+        delete payload.branchId;
+      }
+
+      if (editingId) {
+        await axios.put(`http://localhost:5000/api/users/${editingId}`, payload, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setEditingId(null);
+      } else {
+        await axios.post('http://localhost:5000/api/users', payload, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+      }
+
       setForm({
         name: '',
         surname: '',
         email: '',
         password: '',
-        role: 'admin', // ✅ tekrar admin'e dön
+        role: 'admin',
         branchId: branches[0]?._id || ''
       });
       fetchUsers();
     } catch (err) {
       setError(err.response?.data?.message || 'Kullanıcı eklenemedi.');
     }
+  };
+
+  const handleEdit = (user) => {
+    setForm({
+      name: user.name,
+      surname: user.surname,
+      email: user.email,
+      password: '',
+      role: user.role,
+      branchId: user.branchId?._id || ''
+    });
+    setEditingId(user._id);
   };
 
   const handleDelete = async (userId) => {
@@ -78,16 +112,11 @@ const UserPage = () => {
     }
   };
 
-  useEffect(() => {
-    fetchUsers();
-    fetchBranches();
-  }, []);
-
   return (
     <div style={{ padding: 24, maxWidth: 800, margin: '0 auto' }}>
-      <h2>Admin / Super Admin Yönetimi</h2>
+      <h2>Kullanıcı Yönetimi (Sadece Super Admin)</h2>
 
-      <form onSubmit={handleCreate} style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 24 }}>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 24 }}>
         <input
           type="text"
           placeholder="Ad"
@@ -114,17 +143,8 @@ const UserPage = () => {
           placeholder="Şifre"
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
-          required
+          required={!editingId}
         />
-        <select
-          value={form.branchId}
-          onChange={(e) => setForm({ ...form, branchId: e.target.value })}
-          required
-        >
-          {branches.map((b) => (
-            <option key={b._id} value={b._id}>{b.name}</option>
-          ))}
-        </select>
 
         <select
           value={form.role}
@@ -132,10 +152,23 @@ const UserPage = () => {
           required
         >
           <option value="admin">admin</option>
+          <option value="worker">worker</option>
           <option value="super_admin">super_admin</option>
         </select>
 
-        <button type="submit">Kullanıcı Ekle</button>
+        {form.role === 'worker' && (
+          <select
+            value={form.branchId}
+            onChange={(e) => setForm({ ...form, branchId: e.target.value })}
+            required
+          >
+            {branches.map((b) => (
+              <option key={b._id} value={b._id}>{b.name}</option>
+            ))}
+          </select>
+        )}
+
+        <button type="submit">{editingId ? 'Kullanıcıyı Güncelle' : 'Kullanıcı Ekle'}</button>
       </form>
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
@@ -144,15 +177,9 @@ const UserPage = () => {
         {users.map((u) => (
           <li key={u._id} style={{ border: '1px solid #ccc', padding: 12, borderRadius: 6 }}>
             <strong>{u.name} {u.surname}</strong> – {u.email} – <code>{u.role}</code>
-            {u.branchId && (
-              <> – <em>{u.branchId.name}</em></>
-            )}
-            <button
-              onClick={() => handleDelete(u._id)}
-              style={{ marginLeft: 12, color: 'red' }}
-            >
-              Sil
-            </button>
+            {u.branchId && <> – <em>{u.branchId.name}</em></>}
+            <button onClick={() => handleEdit(u)} style={{ marginLeft: 12 }}>Düzenle</button>
+            <button onClick={() => handleDelete(u._id)} style={{ marginLeft: 12, color: 'red' }}>Sil</button>
           </li>
         ))}
       </ul>
