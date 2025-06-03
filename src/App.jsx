@@ -12,20 +12,19 @@ import DashboardPage from './pages/DashboardPage';
 const App = () => {
   const [token, setToken] = useState(localStorage.getItem('token'));
 
-  // Login durumunu izlemek için
   useEffect(() => {
-    const interval = setInterval(() => {
-      const currentToken = localStorage.getItem('token');
-      setToken(currentToken);
-    }, 1500); // yarım saniyede bir kontrol
+    const handleStorageChange = () => {
+      setToken(localStorage.getItem('token'));
+    };
 
-    return () => clearInterval(interval);
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={<LoginPage />} />
+        <Route path="/login" element={<LoginPage onLogin={() => setToken(localStorage.getItem('token'))} />} />
         <Route path="/orders" element={token ? <OrdersPage /> : <Navigate to="/login" />} />
         <Route path="/create-order" element={token ? <CreateOrderPage /> : <Navigate to="/login" />} />
         <Route path="/branches" element={token ? <BranchPage /> : <Navigate to="/login" />} />

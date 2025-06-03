@@ -27,8 +27,8 @@ const CreateOrderPage = () => {
         setBranches(res.data);
 
         if (role === 'worker') {
-          const userBranch = res.data.find(b => b._id === localStorage.getItem('branchId'));
-          setBranchId(userBranch?._id || res.data[0]?._id || '');
+          const userBranchId = localStorage.getItem('branchId');
+          setBranchId(userBranchId || res.data[0]?._id || '');
         } else {
           setBranchId(res.data[0]?._id || '');
         }
@@ -40,20 +40,38 @@ const CreateOrderPage = () => {
     fetchBranches();
   }, [role]);
 
+  if (role === 'worker') {
+  console.log('localStorage branchId:', localStorage.getItem('branchId'));
+}
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
     try {
       const token = localStorage.getItem('token');
+      const finalBranchId = role === 'worker' ? localStorage.getItem('branchId') : branchId;
+
+      console.log('Gönderilecek branchId:', finalBranchId);
+
+      const payload = {
+        name,
+        quantity,
+        branchId: finalBranchId,
+      };
+
+      console.log('Gönderilen veri:', payload);
+
       await axios.post(
         'http://localhost:5000/api/orders',
-        { name, quantity, branchId },
+        payload,
         { headers: { Authorization: `Bearer ${token}` } }
       );
+
       alert('Sipariş oluşturuldu');
       navigate('/orders');
     } catch (err) {
+      console.error('🚨 Sipariş oluşturulamadı:', err.response?.data);
       setError(err.response?.data?.message || 'Sipariş oluşturulamadı');
     }
   };

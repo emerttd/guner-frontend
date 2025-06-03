@@ -46,10 +46,10 @@ const DashboardPage = () => {
         <li>Beklemede: {data.orders.pending}</li>
       </ul>
 
-      <h3>👥 Kullanıcılar</h3>
+      <h3>👥 Tüm Kullanıcılar: {data.users.total}</h3>
       <ul>
-        <li>Toplam: {data.users.total}</li>
         <li>Admin: {data.users.admins}</li>
+        <li>Worker: {data.users.workers}</li>
         <li>Super Admin: {data.users.superAdmins}</li>
       </ul>
 
