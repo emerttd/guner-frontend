@@ -41,7 +41,6 @@ const CreateOrderPage = () => {
   }, [role]);
 
   if (role === 'worker') {
-  console.log('localStorage branchId:', localStorage.getItem('branchId'));
 }
 
   const handleSubmit = async (e) => {
