@@ -44,6 +44,7 @@ const DashboardPage = () => {
         <li>Hazır: {data.orders.ready}</li>
         <li>Hazırlanıyor: {data.orders.inProgress}</li>
         <li>Beklemede: {data.orders.pending}</li>
+        <li>İptal Edildi: {data.orders.cancelled}</li>
       </ul>
 
       <h3>👥 Tüm Kullanıcılar: {data.users.total}</h3>
@@ -88,6 +89,29 @@ const DashboardPage = () => {
           }}
         >
           🧹 Hazır Siparişleri Temizle
+        </button>
+        <button
+          style={{ color: 'red' }}
+          onClick={() => {
+            const confirmed = window.confirm(
+              'Bu işlem, tüm DURUMU "iptal edildi" olan siparişleri kalıcı olarak silecek.\nDevam etmek istediğine emin misin?'
+            );
+            if (!confirmed) return;
+
+            axios
+              .delete('http://localhost:5000/api/orders/cleanup/cancelled', {
+                headers: { Authorization: `Bearer ${token}` }
+              })
+              .then((res) => {
+                alert(`✅ ${res.data.deletedCount} iptal edilmiş sipariş silindi.`);
+                fetchDashboard();
+              })
+              .catch(() => {
+                alert('❌ Silme işlemi başarısız oldu.');
+              });
+          }}
+        >
+          🧹 İptal Edilen Siparişleri Temizle
         </button>
       </div>
     </div>

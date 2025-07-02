@@ -81,6 +81,20 @@ const OrdersPage = () => {
                   {order.status === 'hazırlanıyor' && (
                     <button onClick={() => updateStatus(order._id, 'hazır')}>Hazırla</button>
                   )}
+                  {['beklemede', 'hazırlanıyor'].includes(order.status) && (
+                    <button
+                      onClick={() => {
+                        const confirmed = window.confirm(
+                          `${order.quantity} sayılı ${order.name} siparişini iptal etmek istediğinize emin misiniz?`
+                        );
+                        if (confirmed) {
+                          updateStatus(order._id, 'iptal edildi');
+                        }
+                      }}
+                    >
+                      İptal Et
+                    </button>
+                  )}
                 </div>
               )}
             </li>

@@ -40,9 +40,6 @@ const CreateOrderPage = () => {
     fetchBranches();
   }, [role]);
 
-  if (role === 'worker') {
-}
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -112,6 +109,9 @@ const CreateOrderPage = () => {
         <button type="submit" style={{ width: '100%' }}>Oluştur</button>
       </form>
       {error && <p style={{ color: 'red' }}>{error}</p>}
+      <button onClick={() => navigate('/orders')} style={{ marginTop: 8 }}>
+        ← Sipariş Listesine Dön
+      </button>
     </div>
   );
 };
