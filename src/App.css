@@ -1,8 +1,8 @@
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  padding: 0; /* Dış padding kaldırıldı */
+  width: 100%; /* Tam genişlik kullanması sağlandı */
 }
 
 .logo {
@@ -34,9 +34,411 @@
 }
 
 .card {
-  padding: 2em;
+  padding: 1.25rem;
+  background-color: var(--card-bg-light);
+  border: 1px solid var(--border-color-light);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-align: left; /* Align card content to the left */
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 }
 
 .read-the-docs {
   color: #888;
+}
+
+/* Main App Container */
+.app-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Header Styles --- */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background-color: var(--card-bg-light);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1.5rem;
+  position: relative; /* For mobile menu positioning */
+  z-index: 10;
+}
+
+/* --- Logo Styles --- */
+.logo-link {
+  text-decoration: none;
+}
+
+.app-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 110px;
+  height: 50px;
+  background-color: var(--danger-color);
+  border-radius: 50%; /* Creates the ellipse shape */
+  color: white;
+  font-family: "Lora", serif;
+  font-weight: 600;
+  font-size: 1.5rem;
+  border: 2px solid white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.app-logo:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(220, 53, 69, 0.5);
+}
+
+/* --- Navigation Styles --- */
+.main-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.mobile-menu-toggle {
+  display: none; /* Hidden on desktop */
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  color: var(--text-light);
+}
+
+/* Page Wrapper */
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  /* flex-wrap: wrap; <-- Bu satır kaldırıldı */
+}
+
+.page-header h2 {
+  margin: 0;
+  font-size: 2rem;
+  color: var(--text-light);
+}
+
+/* Form Styles */
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* Increased gap for better separation */
+  max-width: 500px;
+  margin: 2rem auto;
+  width: 100%;
+}
+
+.form-container .card {
+  width: 100%;
+}
+
+.form-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 500px) {
+  .form-row {
+    flex-direction: row;
+  }
+  .form-row > * {
+    flex: 1;
+  }
+}
+
+.form-input,
+.form-select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color-light);
+  background-color: var(--background-light);
+  color: var(--text-light);
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box; /* Ensures padding doesn't affect width */
+}
+
+.form-input:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+/* Button Styles */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6em 1.2em;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.25s;
+  text-decoration: none;
+  color: #fff;
+  box-sizing: border-box;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+}
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+}
+
+.btn-secondary {
+  background-color: var(--card-bg-light);
+  color: var(--text-light);
+  border: 1px solid var(--border-color-light);
+}
+.btn-secondary:hover {
+  background-color: var(--background-light);
+  border-color: var(--primary-color);
+}
+
+.btn-danger {
+  background-color: var(--danger-color);
+}
+.btn-danger:hover {
+  background-color: var(--danger-hover);
+}
+
+.btn-success {
+  background-color: var(--success-color);
+}
+.btn-warning {
+  background-color: var(--warning-color);
+  color: var(--text-light);
+}
+.btn-info {
+  background-color: var(--info-color);
+}
+
+/* Add Order Button Style */
+.btn-add-order {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 20%;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s, transform 0.2s;
+  flex-shrink: 0; /* Butonun küçülmesini engeller */
+}
+
+.btn-add-order:hover {
+  background-color: var(--primary-hover);
+  transform: scale(1.05);
+}
+
+/* Action Group for buttons */
+.action-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+/* List Styles */
+.item-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.list-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.list-item-header {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.list-item-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* Status Badges */
+.status-badge {
+  padding: 0.25em 0.6em;
+  border-radius: 12px;
+  font-size: 0.85em;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+.status-beklemede {
+  background-color: rgba(255, 193, 7, 0.2);
+  color: #b98900;
+}
+.status-hazırlanıyor {
+  background-color: rgba(23, 162, 184, 0.2);
+  color: #0f6674;
+}
+.status-hazır {
+  background-color: rgba(40, 167, 69, 0.2);
+  color: #1d643b;
+}
+.status-iptal-edildi {
+  background-color: rgba(220, 53, 69, 0.2);
+  color: #a52834;
+}
+
+/* Utility Classes */
+.error-message {
+  color: var(--danger-color);
+  background-color: rgba(220, 53, 69, 0.1);
+  padding: 0.75rem;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.loading-message,
+.empty-message {
+  text-align: center;
+  padding: 2rem;
+  color: #888;
+}
+
+/* Dark Mode Specifics */
+@media (prefers-color-scheme: dark) {
+  .app-header,
+  .card {
+    background-color: var(--card-bg-dark);
+    border-color: var(--border-color-dark);
+  }
+  .page-header h2 {
+    color: var(--text-dark);
+  }
+  .form-input,
+  .form-select {
+    background-color: var(--background-dark);
+    color: var(--text-dark);
+    border-color: var(--border-color-dark);
+  }
+  .btn-secondary {
+    background-color: var(--card-bg-dark);
+    color: var(--text-dark);
+    border-color: var(--border-color-dark);
+  }
+  .btn-secondary:hover {
+    background-color: #3a3f44;
+  }
+  .mobile-menu-toggle {
+    color: var(--text-dark);
+  }
+}
+
+/* --- Responsive Adjustments & Mobile Menu --- */
+@media (max-width: 850px) {
+  .main-nav {
+    display: none; /* Hide nav links by default */
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: var(--card-bg-light);
+    flex-direction: column;
+    align-items: stretch;
+    padding: 1rem;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+  }
+
+  .main-nav.is-open {
+    display: flex; /* Show when menu is open */
+  }
+
+  .main-nav .btn {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 1rem;
+  }
+
+  .mobile-menu-toggle {
+    display: block; /* Show hamburger icon */
+  }
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    flex-direction: row; /* Keep logo and icon on the same line */
+  }
+  /* .page-header kuralı kaldırıldı, böylece masaüstü ile aynı davranacak */
+  .item-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .item-list {
+    grid-template-columns: 1fr; /* Single column on very small screens */
+  }
 }

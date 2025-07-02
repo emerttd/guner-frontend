@@ -1,136 +1,156 @@
-// src/pages/BranchPage.jsx
+"use client"
 
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from "react"
+import axios from "axios"
+import { motion, AnimatePresence } from "framer-motion"
 
 const BranchPage = () => {
-  const [branches, setBranches] = useState([]);
-  const [name, setName] = useState('');
-  const [error, setError] = useState('');
-  const [editingId, setEditingId] = useState(null);
-  const [editedName, setEditedName] = useState('');
+  const [branches, setBranches] = useState([])
+  const [name, setName] = useState("")
+  const [error, setError] = useState("")
+  const [editingId, setEditingId] = useState(null)
+  const [editedName, setEditedName] = useState("")
+  const [isLoading, setIsLoading] = useState(true)
 
-  const navigate = useNavigate();
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token")
 
   const fetchBranches = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/branches', {
+      const res = await axios.get("http://localhost:5000/api/branches", {
         headers: { Authorization: `Bearer ${token}` },
-      });
-      setBranches(res.data);
+      })
+      setBranches(res.data)
     } catch (err) {
-      setError('Şubeler alınamadı.');
+      setError("Şubeler alınamadı.")
+    } finally {
+      setIsLoading(false)
     }
-  };
+  }
+
+  useEffect(() => {
+    fetchBranches()
+  }, [])
 
   const handleCreate = async (e) => {
-    e.preventDefault();
-    setError('');
+    e.preventDefault()
+    if (!name.trim()) return
+    setError("")
     try {
-      await axios.post(
-        'http://localhost:5000/api/branches',
+      const res = await axios.post(
+        "http://localhost:5000/api/branches",
         { name },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setName('');
-      fetchBranches();
+        { headers: { Authorization: `Bearer ${token}` } },
+      )
+      setBranches([...branches, res.data])
+      setName("")
     } catch (err) {
-      setError('Şube oluşturulamadı.');
+      setError("Şube oluşturulamadı.")
     }
-  };
+  }
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Bu şubeyi silmek istediğine emin misin?')) return;
+    if (!window.confirm("Bu şubeyi silmek istediğinize emin misiniz?")) return
     try {
       await axios.delete(`http://localhost:5000/api/branches/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
-      });
-      fetchBranches();
+      })
+      setBranches(branches.filter((b) => b._id !== id))
     } catch (err) {
-      alert('Şube silinemedi.');
+      alert("Şube silinemedi. Muhtemelen şubeye bağlı siparişler veya kullanıcılar var.")
     }
-  };
+  }
 
   const handleUpdate = async (id) => {
     try {
       await axios.put(
         `http://localhost:5000/api/branches/${id}`,
         { name: editedName },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setEditingId(null);
-      fetchBranches();
+        { headers: { Authorization: `Bearer ${token}` } },
+      )
+      setEditingId(null)
+      fetchBranches()
     } catch (err) {
-      alert('Şube güncellenemedi.');
+      alert("Şube güncellenemedi.")
     }
-  };
+  }
 
-  useEffect(() => {
-    fetchBranches();
-  }, []);
+  if (isLoading) return <div className="loading-message">Şubeler Yükleniyor...</div>
 
   return (
-    <div style={{ padding: 24, maxWidth: 600, margin: '0 auto' }}>
-      <h2>Şubeler</h2>
+    <>
+      <div className="page-header">
+        <h2>Şube Yönetimi</h2>
+      </div>
 
-      <form onSubmit={handleCreate} style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-        <input
-          type="text"
-          placeholder="Yeni şube adı"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          style={{ flex: 1, padding: 8 }}
-        />
-        <button type="submit">Ekle</button>
-      </form>
+      <motion.div layout className="card">
+        <form onSubmit={handleCreate} className="action-group">
+          <input
+            type="text"
+            className="form-input"
+            placeholder="Yeni şube adı"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            style={{ flex: 1, minWidth: "200px" }}
+          />
+          <button type="submit" className="btn btn-primary">
+            Ekle
+          </button>
+        </form>
+        {error && (
+          <p className="error-message" style={{ marginTop: "1rem" }}>
+            {error}
+          </p>
+        )}
+      </motion.div>
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <motion.ul layout className="item-list">
+        <AnimatePresence>
+          {branches.map((branch) => (
+            <motion.li
+              layout
+              key={branch._id}
+              className="card list-item"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              {editingId === branch._id ? (
+                <div className="form-wrapper">
+                  <input value={editedName} onChange={(e) => setEditedName(e.target.value)} className="form-input" />
+                  <div className="action-group">
+                    <button onClick={() => handleUpdate(branch._id)} className="btn btn-success">
+                      Kaydet
+                    </button>
+                    <button onClick={() => setEditingId(null)} className="btn btn-secondary">
+                      İptal
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <strong className="list-item-header">{branch.name}</strong>
+                  <div className="list-item-actions">
+                    <button
+                      onClick={() => {
+                        setEditingId(branch._id)
+                        setEditedName(branch.name)
+                      }}
+                      className="btn btn-secondary"
+                    >
+                      Düzenle
+                    </button>
+                    <button onClick={() => handleDelete(branch._id)} className="btn btn-danger">
+                      Sil
+                    </button>
+                  </div>
+                </>
+              )}
+            </motion.li>
+          ))}
+        </AnimatePresence>
+      </motion.ul>
+    </>
+  )
+}
 
-      <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {branches.map((branch) => (
-          <li key={branch._id} style={{ border: '1px solid #ccc', padding: 12, borderRadius: 8 }}>
-            {editingId === branch._id ? (
-              <>
-                <input
-                  value={editedName}
-                  onChange={(e) => setEditedName(e.target.value)}
-                  style={{ marginRight: 8, padding: 6 }}
-                />
-                <button onClick={() => handleUpdate(branch._id)}>Kaydet</button>
-                <button onClick={() => setEditingId(null)} style={{ marginLeft: 8 }}>
-                  İptal
-                </button>
-              </>
-            ) : (
-              <>
-                <strong>{branch.name}</strong>
-                <button
-                  onClick={() => {
-                    setEditingId(branch._id);
-                    setEditedName(branch.name);
-                  }}
-                  style={{ marginLeft: 8 }}
-                >
-                  Düzenle
-                </button>
-                <button
-                  onClick={() => handleDelete(branch._id)}
-                  style={{ marginLeft: 8, color: 'red' }}
-                >
-                  Sil
-                </button>
-              </>
-            )}
-          </li>
-        ))}
-      </ul>
-
-      <br />
-      <button onClick={() => navigate('/orders')}>← Sipariş Listesine Dön</button>
-    </div>
-  );
-};
-
-export default BranchPage;
+export default BranchPage
