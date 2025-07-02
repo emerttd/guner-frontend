@@ -4,7 +4,6 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 import { motion, AnimatePresence } from "framer-motion"
 import { useNavigate } from "react-router-dom"
-// import { Plus } from 'lucide-react' // Lucide ikonu kaldırıldı
 
 const OrdersPage = () => {
   const [orders, setOrders] = useState([])
@@ -15,12 +14,29 @@ const OrdersPage = () => {
   const token = localStorage.getItem("token")
   const role = localStorage.getItem("role")
 
+  // Sıralama mantığını tanımla
+  const statusOrder = {
+    beklemede: 1,
+    hazırlanıyor: 2,
+    hazır: 3,
+    "iptal edildi": 4,
+  }
+
+  const sortOrders = (orderArray) => {
+    // Orijinal diziyi değiştirmemek için bir kopyasını oluştur
+    return [...orderArray].sort((a, b) => {
+      const orderA = statusOrder[a.status] || 99 // Beklenmedik bir durum için yüksek bir sayı ata
+      const orderB = statusOrder[b.status] || 99
+      return orderA - orderB
+    })
+  }
+
   const fetchOrders = async () => {
     try {
       const res = await axios.get("http://localhost:5000/api/orders", {
         headers: { Authorization: `Bearer ${token}` },
       })
-      setOrders(res.data)
+      setOrders(sortOrders(res.data)) // Gelen veriyi sırala ve state'e ata
     } catch (err) {
       setError(err.response?.data?.message || "Siparişler alınamadı.")
     } finally {
@@ -34,20 +50,22 @@ const OrdersPage = () => {
 
   const updateStatus = async (orderId, newStatus) => {
     try {
-      // Optimistic UI update
-      setOrders((prevOrders) =>
-        prevOrders.map((order) => (order._id === orderId ? { ...order, status: newStatus } : order)),
-      )
+      // İyimser UI güncellemesi ve yeniden sıralama
+      setOrders((prevOrders) => {
+        const updatedOrders = prevOrders.map((order) =>
+          order._id === orderId ? { ...order, status: newStatus } : order,
+        )
+        return sortOrders(updatedOrders)
+      })
 
       await axios.put(
         `http://localhost:5000/api/orders/status/${orderId}`,
         { status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } },
       )
-      // No need to fetch again if optimistic update is successful
     } catch (err) {
       alert("Durum güncellenemedi")
-      fetchOrders() // Re-fetch to revert optimistic update on error
+      fetchOrders() // Hata durumunda orijinal listeyi geri yükle
     }
   }
 
