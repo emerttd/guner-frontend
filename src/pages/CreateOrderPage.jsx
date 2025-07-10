@@ -48,7 +48,13 @@ const CreateOrderPage = () => {
     setIsLoading(true)
     try {
       const finalBranchId = role === "worker" ? localStorage.getItem("branchId") : branchId
-      const payload = { name, quantity, branchId: finalBranchId }
+      const payload = {
+        name,
+        quantity,
+        category,
+        status: "beklemede",
+        branchId: finalBranchId,
+      }
       await axios.post("http://localhost:5000/api/orders", payload, { headers: { Authorization: `Bearer ${token}` } })
       alert("Sipariş başarıyla oluşturuldu")
       navigate("/orders")

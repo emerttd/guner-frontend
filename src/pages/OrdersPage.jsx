@@ -16,7 +16,6 @@ const OrdersPage = () => {
   const categories = ["yaş pasta", "tatlı", "kuru pasta"]
   const [categoryFilter, setCategoryFilter] = useState("")
 
-  // Sıralama mantığını tanımla
   const statusOrder = {
     beklemede: 1,
     hazırlanıyor: 2,
@@ -25,21 +24,21 @@ const OrdersPage = () => {
   }
 
   const sortOrders = (orderArray) => {
-    // Orijinal diziyi değiştirmemek için bir kopyasını oluştur
     return [...orderArray].sort((a, b) => {
-      const orderA = statusOrder[a.status] || 99 // Beklenmedik bir durum için yüksek bir sayı ata
+      const orderA = statusOrder[a.status] || 99
       const orderB = statusOrder[b.status] || 99
       return orderA - orderB
     })
   }
 
   const fetchOrders = async () => {
+    setIsLoading(true)
     try {
       const res = await axios.get("http://localhost:5000/api/orders", {
         headers: { Authorization: `Bearer ${token}` },
         params: categoryFilter ? { category: categoryFilter } : {},
       })
-      setOrders(sortOrders(res.data)) // Gelen veriyi sırala ve state'e ata
+      setOrders(sortOrders(res.data))
     } catch (err) {
       setError(err.response?.data?.message || "Siparişler alınamadı.")
     } finally {
@@ -53,7 +52,6 @@ const OrdersPage = () => {
 
   const updateStatus = async (orderId, newStatus) => {
     try {
-      // İyimser UI güncellemesi ve yeniden sıralama
       setOrders((prevOrders) => {
         const updatedOrders = prevOrders.map((order) =>
           order._id === orderId ? { ...order, status: newStatus } : order,
@@ -68,7 +66,7 @@ const OrdersPage = () => {
       )
     } catch (err) {
       alert("Durum güncellenemedi")
-      fetchOrders() // Hata durumunda orijinal listeyi geri yükle
+      fetchOrders()
     }
   }
 
@@ -82,33 +80,37 @@ const OrdersPage = () => {
     return statusMap[status] || ""
   }
 
-  if (isLoading) return <div className="loading-message">Siparişler Yükleniyor...</div>
-  if (error) return <p className="error-message">{error}</p>
-
   return (
     <>
       <div className="page-header">
         <h2>Sipariş Listesi</h2>
-        <select
-          className="form-select"
-          value={categoryFilter}
-          onChange={(e) => setCategoryFilter(e.target.value)}
-          style={{ marginLeft: "auto", marginRight: "1rem" }}
-        >
-          <option value="">Tümü</option>
-          {categories.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
         <button onClick={() => navigate("/create-order")} className="btn-add-order" aria-label="Yeni sipariş oluştur">
           +
         </button>
       </div>
 
-      {orders.length === 0 ? (
-        <div className="empty-message card">Henüz görüntülenecek sipariş yok.</div>
+      {/* Kategori filtre butonları */}
+      <div className="category-filters">
+        <button onClick={() => setCategoryFilter("")} className={`filter-btn ${categoryFilter === "" ? "active" : ""}`}>
+          Tümü
+        </button>
+        {categories.map((cat) => (
+          <button
+            key={cat}
+            onClick={() => setCategoryFilter(cat)}
+            className={`filter-btn ${categoryFilter === cat ? "active" : ""}`}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      {isLoading ? (
+        <div className="loading-message">Siparişler Yükleniyor...</div>
+      ) : error ? (
+        <p className="error-message">{error}</p>
+      ) : orders.length === 0 ? (
+        <div className="empty-message card">Bu kategoride görüntülenecek sipariş yok.</div>
       ) : (
         <motion.ul layout className="item-list">
           <AnimatePresence>

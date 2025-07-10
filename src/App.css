@@ -145,13 +145,46 @@
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
-  /* flex-wrap: wrap; <-- Bu satır kaldırıldı */
 }
 
 .page-header h2 {
   margin: 0;
   font-size: 2rem;
   color: var(--text-light);
+}
+
+/* --- Category Filter Styles --- */
+.category-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem; /* Alttaki listeyle arasını açar */
+}
+
+.filter-btn {
+  padding: 0.5em 1.2em;
+  border-radius: 20px; /* Hap şeklinde butonlar */
+  border: 1px solid var(--border-color-light);
+  background-color: var(--card-bg-light);
+  color: var(--text-light);
+  font-size: 0.9em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  text-transform: capitalize;
+}
+
+.filter-btn:hover:not(.active) {
+  background-color: var(--background-light);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.filter-btn.active {
+  background-color: var(--primary-color);
+  color: #fff;
+  border-color: var(--primary-color);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
 }
 
 /* Form Styles */
@@ -276,13 +309,16 @@
   background-color: var(--primary-color);
   color: white;
   border: none;
-  width: 44px;
-  height: 44px;
-  border-radius: 20%;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: background-color 0.2s, transform 0.2s;
-  flex-shrink: 0; /* Butonun küçülmesini engeller */
+  flex-shrink: 0;
+  font-size: 2.2rem; /* + işaretinin boyutu ayarlandı */
+  font-weight: 300;
+  /* Hizalama için line-height ve padding kaldırıldı, flexbox'a güvenildi */
 }
 
 .btn-add-order:hover {
@@ -376,6 +412,14 @@
   .page-header h2 {
     color: var(--text-dark);
   }
+  .filter-btn {
+    background-color: var(--card-bg-dark);
+    color: var(--text-dark);
+    border-color: var(--border-color-dark);
+  }
+  .filter-btn:hover:not(.active) {
+    background-color: #3a3f44;
+  }
   .form-input,
   .form-select {
     background-color: var(--background-dark);
@@ -431,7 +475,6 @@
   .app-header {
     flex-direction: row; /* Keep logo and icon on the same line */
   }
-  /* .page-header kuralı kaldırıldı, böylece masaüstü ile aynı davranacak */
   .item-list {
     grid-template-columns: repeat(2, 1fr);
   }
