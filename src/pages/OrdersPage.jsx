@@ -13,6 +13,8 @@ const OrdersPage = () => {
 
   const token = localStorage.getItem("token")
   const role = localStorage.getItem("role")
+  const categories = ["yaş pasta", "tatlı", "kuru pasta"]
+  const [categoryFilter, setCategoryFilter] = useState("")
 
   // Sıralama mantığını tanımla
   const statusOrder = {
@@ -35,6 +37,7 @@ const OrdersPage = () => {
     try {
       const res = await axios.get("http://localhost:5000/api/orders", {
         headers: { Authorization: `Bearer ${token}` },
+        params: categoryFilter ? { category: categoryFilter } : {},
       })
       setOrders(sortOrders(res.data)) // Gelen veriyi sırala ve state'e ata
     } catch (err) {
@@ -46,7 +49,7 @@ const OrdersPage = () => {
 
   useEffect(() => {
     fetchOrders()
-  }, [])
+  }, [categoryFilter])
 
   const updateStatus = async (orderId, newStatus) => {
     try {
@@ -86,6 +89,19 @@ const OrdersPage = () => {
     <>
       <div className="page-header">
         <h2>Sipariş Listesi</h2>
+        <select
+          className="form-select"
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+          style={{ marginLeft: "auto", marginRight: "1rem" }}
+        >
+          <option value="">Tümü</option>
+          {categories.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
+        </select>
         <button onClick={() => navigate("/create-order")} className="btn-add-order" aria-label="Yeni sipariş oluştur">
           +
         </button>
@@ -113,6 +129,7 @@ const OrdersPage = () => {
                 <div>
                   Durum: <span className={`status-badge ${getStatusClass(order.status)}`}>{order.status}</span>
                 </div>
+                <div>Kategori: {order.category}</div>
                 {order.branchId?.name && <div>Şube: {order.branchId.name}</div>}
 
                 {role !== "worker" && (

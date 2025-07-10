@@ -9,6 +9,8 @@ const CreateOrderPage = () => {
   const navigate = useNavigate()
   const [name, setName] = useState("")
   const [quantity, setQuantity] = useState(1)
+  const categories = ["yaş pasta", "tatlı", "kuru pasta"]
+  const [category, setCategory] = useState(categories[0])
   const [branches, setBranches] = useState([])
   const [branchId, setBranchId] = useState("")
   const [error, setError] = useState("")
@@ -90,6 +92,22 @@ const CreateOrderPage = () => {
               onChange={(e) => setQuantity(Number(e.target.value))}
               required
             />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="category">Kategori</label>
+            <select
+              id="category"
+              className="form-select"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              {categories.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
           </div>
 
           {role !== "worker" && (
