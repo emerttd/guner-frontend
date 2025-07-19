@@ -34,7 +34,7 @@ const OrdersPage = () => {
   const fetchOrders = async () => {
     setIsLoading(true)
     try {
-      const res = await axios.get("http://localhost:5000/api/orders", {
+      const res = await axios.get("orders", {
         headers: { Authorization: `Bearer ${token}` },
         params: categoryFilter ? { category: categoryFilter } : {},
       })
@@ -60,7 +60,7 @@ const OrdersPage = () => {
       })
 
       await axios.put(
-        `http://localhost:5000/api/orders/status/${orderId}`,
+        `orders/status/${orderId}`,
         { status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } },
       )

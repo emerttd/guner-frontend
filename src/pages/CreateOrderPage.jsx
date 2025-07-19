@@ -27,7 +27,7 @@ const CreateOrderPage = () => {
   useEffect(() => {
     const fetchBranches = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/branches", {
+        const res = await axios.get("branches", {
           headers: { Authorization: `Bearer ${token}` },
         })
         setBranches(res.data)
@@ -55,7 +55,7 @@ const CreateOrderPage = () => {
         status: "beklemede",
         branchId: finalBranchId,
       }
-      await axios.post("http://localhost:5000/api/orders", payload, { headers: { Authorization: `Bearer ${token}` } })
+      await axios.post("orders", payload, { headers: { Authorization: `Bearer ${token}` } })
       alert("Sipariş başarıyla oluşturuldu")
       navigate("/orders")
     } catch (err) {

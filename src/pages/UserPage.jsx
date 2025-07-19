@@ -26,8 +26,8 @@ const UserPage = () => {
       setIsLoading(true)
       try {
         const [usersRes, branchesRes] = await Promise.all([
-          axios.get("http://localhost:5000/api/users", { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get("http://localhost:5000/api/branches", { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get("users", { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get("branches", { headers: { Authorization: `Bearer ${token}` } }),
         ])
         setUsers(usersRes.data)
         setBranches(branchesRes.data)
@@ -66,16 +66,16 @@ const UserPage = () => {
       }
 
       if (editingId) {
-        await axios.put(`http://localhost:5000/api/users/${editingId}`, payload, {
+        await axios.put(`users/${editingId}`, payload, {
           headers: { Authorization: `Bearer ${token}` },
         })
       } else {
-        await axios.post("http://localhost:5000/api/users", payload, {
+        await axios.post("users", payload, {
           headers: { Authorization: `Bearer ${token}` },
         })
       }
       resetForm()
-      const res = await axios.get("http://localhost:5000/api/users", { headers: { Authorization: `Bearer ${token}` } })
+      const res = await axios.get("users", { headers: { Authorization: `Bearer ${token}` } })
       setUsers(res.data)
     } catch (err) {
       setError(err.response?.data?.message || "İşlem gerçekleştirilemedi.")
@@ -98,7 +98,7 @@ const UserPage = () => {
   const handleDelete = async (userId) => {
     if (!window.confirm("Bu kullanıcıyı silmek istediğinizden emin misiniz?")) return
     try {
-      await axios.delete(`http://localhost:5000/api/users/${userId}`, {
+      await axios.delete(`users/${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       setUsers(users.filter((u) => u._id !== userId))

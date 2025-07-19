@@ -16,7 +16,7 @@ const BranchPage = () => {
 
   const fetchBranches = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/branches", {
+      const res = await axios.get("branches", {
         headers: { Authorization: `Bearer ${token}` },
       })
       setBranches(res.data)
@@ -37,7 +37,7 @@ const BranchPage = () => {
     setError("")
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/branches",
+        "branches",
         { name },
         { headers: { Authorization: `Bearer ${token}` } },
       )
@@ -51,7 +51,7 @@ const BranchPage = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Bu şubeyi silmek istediğinize emin misiniz?")) return
     try {
-      await axios.delete(`http://localhost:5000/api/branches/${id}`, {
+      await axios.delete(`branches/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       setBranches(branches.filter((b) => b._id !== id))
@@ -63,7 +63,7 @@ const BranchPage = () => {
   const handleUpdate = async (id) => {
     try {
       await axios.put(
-        `http://localhost:5000/api/branches/${id}`,
+        `branches/${id}`,
         { name: editedName },
         { headers: { Authorization: `Bearer ${token}` } },
       )

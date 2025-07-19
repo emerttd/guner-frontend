@@ -24,7 +24,7 @@ const DashboardPage = () => {
 
   const fetchDashboard = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/dashboard/summary", {
+      const res = await axios.get("dashboard/summary", {
         headers: { Authorization: `Bearer ${token}` },
       })
       setData(res.data)
@@ -47,7 +47,7 @@ const DashboardPage = () => {
     if (!confirmed) return
 
     try {
-      const res = await axios.delete(`http://localhost:5000/api/orders/cleanup/${type}`, {
+      const res = await axios.delete(`orders/cleanup/${type}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       alert(`✅ ${res.data.deletedCount} adet ${typeText} sipariş silindi.`)
